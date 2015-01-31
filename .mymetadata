@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project-module
+  type="WEB"
+  name="itcastOA"
+  id="myeclipse.1418298193357"
+  context-root="/itcastOA"
+  j2ee-spec="5.0"
+  archive="itcastOA.war">
+  <attributes>
+    <attribute name="webrootdir" value="WebRoot" />
+  </attributes>
+</project-module>
+

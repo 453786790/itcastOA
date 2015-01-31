@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC 
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+  <class name="cn.itcast.oa.domain.Forum" table="itcast_forum">
+    <id name="id">
+        <generator class="native"></generator>
+    </id>
+    <property name="name" length="128"></property>
+    <property name="description" length="128"></property>
+    <property name="position"  column="position_"></property>
+    <!-- 主题 数量  -->
+    <property name="topicCount" ></property>
+    <!-- 文章 数量 即  主题 +回复数量  -->
+    <property name="aritcleCount"></property>
+    <!-- 版块和最后 发表主题 的一对一关系 -->
+    <many-to-one name="lastTopic" class="cn.itcast.oa.domain.Topic" column="topicId" unique="true"></many-to-one>
+    <!-- 版本和主题 一对多关系  -->
+    <set name="topics">
+      <key column="forumId"></key>
+      <one-to-many class="cn.itcast.oa.domain.Topic"/>
+    </set>
+  </class>
+</hibernate-mapping>
+

@@ -1,0 +1,93 @@
+    	/**
+	 * 下载文件时，针对不同浏览器，进行附件名的编码
+	 * @param filename 下载文件名
+	 * @param agent 客户端浏览器(通过request.getHeader("user-agent")获得)
+	 * @return 编码后的下载附件名
+	 * @throws IOException
+	 */
+	public String encodeDownloadFilename(String filename, String agent) throws IOException{
+		if(agent.contains("Firefox")){ // 火狐浏览器
+			filename = "=?UTF-8?B?"+new BASE64Encoder().encode(filename.getBytes("utf-8"))+"?=";
+		}else{ // IE及其他浏览器
+			filename = URLEncoder.encode(filename,"utf-8");
+		}
+		return filename;
+	}
+	
+	
+jsp提交到后台 乱码问题	
+	总结jsp提交中文乱码 
+1: 最基本的乱码问题。
+这个乱码问题是最简单的乱码问题。一般新会出现。就是页面编码不一致导致的乱码。
+<%@ page language="java" pageEncoding="UTF-8"%>
+<%@ page contentType="text/html;charset=iso8859-1"%>
+<html>
+<head>
+<title>中文问题</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+</head>
+</head>
+<body>
+   我是个好人
+</body>
+
+三个地方的编码。
+
+第一个地方的编码格式为jsp文件的存储格式。Eclipse会根据这个编码格式保存文件。并编译jsp文件，包括里面的汉字。
+
+第二处编码为解码格式。因为存为UTF-8的文件被解码为iso8859-1，这样如有中文肯定出乱码。也就是必须一致。而第二处所在的这一行，可以没有。缺省也是使用iso8859-1的编码格式。所以如果没有这一行的话，“我是个好人”也会出现乱码。必须一致才可以。
+
+第三处编码为控制浏览器的解码方式。如果前面的解码都一致并且无误的话，这个编码格式没有关系。有的网页出现乱码，就是因为浏览器不能确定使用哪种编码格式。因为页面有时候会嵌入页面，导致浏览器混淆了编码格式。出现了乱码。
+
+
+2:表单使用Post方式提交后接收到的乱码问题
+这个问题也是一个常见的问题。这个乱码也是tomcat的内部编码格式iso8859-1在捣乱，也就是说post提交时，如果没有设置提交的编码格式，则会以iso8859-1方式进行提交，（tomcat默认编码：ISO8859-1）接受的jsp却以utf-8的方式接受。导致乱码。既然这样的原因，下面有几种解决方式，并比较。
+A :接受参数时进行编码转换
+String str = new String(request.getParameter("something").getBytes("ISO-8859-1"),"utf-8") ； 
+
+这样的话，每一个参数都必须这样进行转码。很麻烦。但确实可以拿到汉字。
+
+B :在请求页面上开始处，执行请求的编码代码， request.setCharacterEncoding("UTF-8")，把提交内容的字符集设为UTF－8。这样的话，接受此参数的页面就不必在转码了。直接使用String str request.getParamet("something")；即可得到汉字参数。但每页都需要执行这句话。这个方法也就对post提交的有效果，对于get提交和上传文件时的enctype="multipart/form-data"是无效的。稍后下面单独对这个两个的乱码情况再进行说明。
+
+C :为了避免每页都要写request.setCharacterEncoding("UTF-8")，建议使用过滤器对所有jsp进行编码处理。
+
+3 :表单get提交方式的乱码处理方式
+
+如果使用get方式提交中文，接受参数的页面也会出现乱码，这个乱码的原因也是tomcat的内部编码格式iso8859-1导致。Tomcat会以get的缺省编码方式iso8859-1对汉字进行编码，编码后追加到url，导致接受页面得到的参数为乱码。
+
+解决办法：
+
+A 使用上例中的第一种方式，对接受到的字符进行解码，再转码。
+
+B Get走的是url提交，而在进入url之前已经进行了iso8859-1的编码处理。要想影响这个编码则需要在
+server.xml 的Connector节点增加useBodyEncodingForURI="true" 属性配置，即可控制tomcat对get方式的汉字编码方式，上面这个属性控制get提交也是用 request.setCharacterEncoding("UTF-8")所设置的编码格式进行编码。所以自动编码为utf-8，接受页面正常接受就可以了。但我认为真正的编码过程是，tomcat又要根据
+<Connector port="8080" 
+maxThreads="150" minSpareThreads="25" maxSpareThreads="75" 
+enableLookups="false" redirectPort="8443" acceptCount="100" 
+debug="0" connectionTimeout="20000" useBodyEncodingForURI="true" 
+disableUploadTimeout="true" 
+URIEncoding=”UTF-8”/>里面所设置的URIEncoding=”UTF-8”再进行一次编码，
+但是由于已经编码为utf-8，再编码也不会有变化了。
+如果是从url获取编码，接受页面则是根据URIEncoding=”UTF-8”来进行解码的。 
+posted on 2009-12-29 17:28 BlakeSu 阅读(1746) 评论(3)  编辑  收藏 
+
+
+
+
+
+
+###################################如下起效##############################################
+
+1) 打开tomcat的server.xml文件，找到区块，加入如下一行：
+URIEncoding=”GBK”
+完整的应如下：
+<Connector 
+port="80" maxThreads="150" minSpareThreads="25" maxSpareThreads="75"
+enableLookups="false" redirectPort="8443" acceptCount="100"
+debug="0" connectionTimeout="20000" 
+disableUploadTimeout="true" URIEncoding="GBK" />
+2)重启tomcat,一切OK。
+此方法可解决部分乱码情况，红色部分即设置tomcat 接受url参数时使用的编码，默认情况下IE对url的编码是GBK的
+
+使用eclipse 运行 tomcat 的情况，可在 ${workspace_path}\.metadata\.plugins\org.eclipse.wst.server.core下查找配置文件
+

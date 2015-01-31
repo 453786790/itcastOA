@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+
+<struts>
+	<!--  指定 开发模式-->
+	<constant name="struts.devMode" value="true" />
+	<!--  指定 struts2对象工厂为spring-->
+	<constant name="struts.objectFactory" value="spring"></constant>
+	<package name="default" namespace="/" extends="struts-default">
+	  <!-- 声明拦截器 -->
+	    <interceptors>
+	       <interceptor name="checkPrivilege" class="cn.itcast.oa.web.interceptor.CheckPrivilegeInterceptor"></interceptor>
+	       <!-- 自定义拦截器栈 -->
+	       <interceptor-stack name="myInterceptor">
+	          <interceptor-ref name="checkPrivilege"></interceptor-ref>
+	          <interceptor-ref name="defaultStack"></interceptor-ref>
+	       </interceptor-stack>
+	    </interceptors>
+	   <!-- 指定默认拦截器栈 -->
+	   <default-interceptor-ref name="myInterceptor"></default-interceptor-ref>
+	   <!-- 全局结果页面 -->
+	   <global-results>
+	      <result name="loginUI">/login.jsp</result>
+	      <result name="noPrivilegeUI">/noPrivilegeUI.jsp</result>
+	   </global-results>
+	   
+	   
+	
+		<action name="book_*" class="cn.itcast.oa.web.action.BookAction"
+			method="{1}">
+			<result>/index.jsp</result>
+		</action>
+		<!-- 岗位 -->
+		<action name="role_*" class="roleAction" method="{1}">
+			<result name="roleList">/WEB-INF/jsp/role/list.jsp</result>
+			<result name="toList" type="redirectAction">
+				<param name="namespace">/</param>
+				<param name="actionName">role_list</param>
+			</result>
+			<result name="editUI">/WEB-INF/jsp/role/saveUI.jsp</result>
+			<result name="addUI">/WEB-INF/jsp/role/saveUI.jsp</result>
+			<result name="setPrivilegeUI">/WEB-INF/jsp/role/setPrivilegeUI.jsp</result>
+			
+		</action>
+		<!-- 部门  -->
+		<action name="department_*" class="departmentAction" method="{1}">
+			<result name="deparementList">/WEB-INF/jsp/deparement/list.jsp</result>
+			<result name="toList" type="redirectAction">
+				<param name="namespace">/</param>
+				<param name="actionName">department_list?parentId=${parentId}</param>
+				<!-- 保存后返回当前列表，防止跳 转到顶级列表 -->
+			</result>
+			<result name="toList2" type="chain" >
+				<param name="namespace">/</param>
+				<param name="actionName">department_list</param>
+			</result>
+			<result name="addUI">/WEB-INF/jsp/deparement/saveUI.jsp</result>
+			<result name="editUI">/WEB-INF/jsp/deparement/saveUI.jsp</result>
+		</action>
+		<!-- 用户管理  -->
+		<action name="user_*" class="userAction" method="{1}">
+		   <result name="list">/WEB-INF/jsp/user/list.jsp</result>
+		    <result type="redirectAction" name="toList">
+		     <param name="namespace">/</param>
+		     <param name="actionName">user_list</param>
+		    </result>
+		    
+		    <result name="addUI">/WEB-INF/jsp/user/saveUI.jsp</result>
+		    <result name="editUI">/WEB-INF/jsp/user/saveUI.jsp</result>
+		    <result name="index">/WEB-INF/jsp/home/index.jsp</result>
+		    <result name="loginUI">/login.jsp</result>
+		    
+		</action>
+		<!-- 首页  -->
+		<action name="home_*" class="homeAction" method="{1}">
+			<result name="{1}">/WEB-INF/jsp/home/{1}.jsp</result>
+		</action>
+		<!-- 版块管理 -->
+		<action name="forumManage_*" class="forumManagerAction" method="{1}">
+			<result name="list">/WEB-INF/jsp/forumManager/list.jsp</result>
+			<result name="addUI">/WEB-INF/jsp/forumManager/saveUI.jsp</result>
+			<result name="editUI">/WEB-INF/jsp/forumManager/saveUI.jsp</result>
+			<result type="redirectAction" name="toList">
+			  <param name="namespace">/</param>
+			  <param name="actionName">forumManage_list</param>
+			</result>
+		</action>
+		<!-- 版块 -->
+		<action name="forum_*" class="forumAction" method="{1}">
+		   <result name="list">/WEB-INF/jsp/forum/list.jsp</result>
+		   <result name="forumShow">/WEB-INF/jsp/forum/forumShow.jsp</result>
+		</action>
+		<!-- 主题 的action -->
+		<action name="topic_*" class="topicAction" method="{1}">
+		   <result name="addUI">/WEB-INF/jsp/topic/saveUI.jsp</result>
+		   <result name="topicShow">/WEB-INF/jsp/topic/show.jsp</result>
+		   <result name="forumShow" type="redirectAction">
+				<param name="namespace">/</param>
+				<param name="actionName">forum_show?id=${forumId}</param>
+			</result>
+		</action>
+		<!-- 回复action -->
+		<action name="reply_*" class="replyAction" method="{1}">
+		   <result name="topicShow" type="redirectAction">
+		   	   <param name="namespace">/</param>
+		   	   <param name="actionName">topic_show?id=${topicId}</param>
+		   </result>
+		   <result name="addUI">/WEB-INF/jsp/reply/saveUI.jsp</result>
+		</action>
+		<!-- 流程定义管理 action -->
+		<action name="processDefinition_*" class="processDefinitionAction" method="{1}">
+		   <result name="list">/WEB-INF/jsp/processDefinition/list.jsp</result>
+		   <result name="addUI">/WEB-INF/jsp/processDefinition/saveUI.jsp</result>
+		   <result name="toList" type="redirectAction">
+				<param name="namespace">/</param>
+				<param name="actionName">processDefinition_list</param>
+		   </result>
+		   <result  name="showImage" type="stream">
+		   	  <param name="inputName">is</param>
+		   </result>
+		</action>
+		<!--模版管理 action -->
+		<action name="template_*" class="templateAction" method="{1}">
+		   <result name="list">/WEB-INF/jsp/template/list.jsp</result>
+		   <result name="addUI">/WEB-INF/jsp/template/saveUI.jsp</result>
+		   <result name="editUI">/WEB-INF/jsp/template/saveUI.jsp</result>
+		   <result name="toList" type="redirectAction">
+				<param name="namespace">/</param>
+				<param name="actionName">template_list</param>
+		   </result>
+		   <result  name="showImage" type="stream">
+		   	  <param name="inputName">is</param>
+		   </result>
+		   <result name="download" type="stream">
+		       <param name="contentType">application/msword</param>
+			   <param name="inputName">is</param>
+			   <param name="contentDisposition">attachment;filename="${fileName}"</param>
+			   <param name="bufferSize">1024</param>
+		   </result>
+		</action>
+		<!--流转 action -->
+		<action name="flow_*" class="flowAction" method="{1}">
+		  <result name="templateList">/WEB-INF/jsp/flow/templateList.jsp</result>
+		  <result name="submitUI">/WEB-INF/jsp/flow/submitUI.jsp</result>
+		  <result name="myApplicationList">/WEB-INF/jsp/flow/myApplicationList.jsp</result>
+		  <result name="historyApprovedList">/WEB-INF/jsp/flow/historyApprovedList.jsp</result>
+		  <result name="myTaskList">/WEB-INF/jsp/flow/myTaskList.jsp</result>
+		  <result name="approveUI">/WEB-INF/jsp/flow/approveUI.jsp</result>
+		  <result name="toMyApplicationList" type="redirectAction">
+				<param name="namespace">/</param>
+				<param name="actionName">flow_myApplicationList</param>
+		  </result>
+		  <result name="toMyTaskList" type="redirectAction">
+				<param name="namespace">/</param>
+				<param name="actionName">flow_myTaskList</param>
+		  </result>
+		  <result name="download" type="stream">
+ 			   <param name="inputName">inputStream</param>
+ 			   <param name="contentdisposition">attachment;filename="${filename}"</param>
+		  </result>
+		
+		</action>
+	</package>
+</struts>

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC 
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+  <class name="cn.itcast.oa.domain.Topic" table="itcast_topic">
+    <id name="id">
+        <generator class="native"></generator>
+    </id>
+    <property name="title" length="128"></property>
+    <property name="content" length="256"></property>
+    
+    <property name="postTime" ></property>
+    <property name="ipAddress"></property>
+    <property name="deleted" ></property>
+    <property name="type"></property>
+    <property name="lastUpdateTime"></property>
+    <property name="replyCount" length="128"></property>
+    <!-- 主题 与版块的多对一关系  -->
+    <many-to-one name="forum" class="cn.itcast.oa.domain.Forum" column="forumId"></many-to-one>
+    <!-- 主题 和回复的一对多关系  -->
+    <set name="replies">
+	     <key column="topicId"></key>
+	     <one-to-many class="cn.itcast.oa.domain.Reply" />
+    </set>
+    <!-- 主题 和最后 回复的一对一关系  -->
+    <many-to-one name="lastReply" class="cn.itcast.oa.domain.Reply" unique="true" column="replyId"></many-to-one>
+    <!-- 主题和作者的多对一关系 -->
+	<many-to-one name="author" class="cn.itcast.oa.domain.User" column="userId"/>
+  </class>
+</hibernate-mapping>
+

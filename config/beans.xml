@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+							http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
+							http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
+							http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+	<!-- 读取jdbc属性文件 -->
+	<context:property-placeholder location="classpath:jdbc.properties" />
+	<!-- 配置c3po数据源 -->
+	<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+		<property name="driverClass" value="${driverClass}"></property>
+		<property name="jdbcUrl" value="${jdbcUrl}"></property>
+		<property name="user" value="${user}"></property>
+		<property name="password" value="${password}"></property>
+		<property name="maxPoolSize" value="${maxPoolSize}"></property>
+		<property name="minPoolSize" value="${minPoolSize}"></property>
+		<property name="initialPoolSize" value="${initPoolSize}"></property>
+	</bean>
+	<!-- 本地会话工厂bean -->
+	<bean id="sessionFactory"
+		class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
+		<property name="dataSource" ref="dataSource"></property>
+		<property name="hibernateProperties">
+			<props>
+				<!-- 数据库方言 -->
+				<prop key="hibernate.dialect">org.hibernate.dialect.MySQLInnoDBDialect</prop>
+				<!-- 自动建表 -->
+				<prop key="hibernate.hbm2ddl.auto">update</prop>
+				<!-- 控制台输出sql -->
+				<prop key="hibernate.show_sql">true</prop>
+				<!-- 格式化sql -->
+				<prop key="hibernate.format_sql">true</prop>
+			</props>
+		</property>
+		<!-- 映射文件位置 -->
+		<property name="mappingDirectoryLocations">
+			<list>
+				<value>classpath:cn/itcast/oa/domain</value>
+			</list>
+		</property>
+		<!-- 配置jbpm映射文件 -->
+		<property name="mappingJarLocations">
+			<list>
+				<value>/WEB-INF/lib/jbpm.jar</value>
+			</list>		
+		</property>
+	</bean>
+	<!-- 事物管理器 -->
+	<bean id="txManager"
+		class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+		<property name="sessionFactory" ref="sessionFactory"></property>
+	</bean>
+	<!-- 组件扫描 -->
+	<context:component-scan base-package="cn.itcast.oa"></context:component-scan>
+	<!-- 支持注解 -->
+	<context:annotation-config></context:annotation-config>
+	<!-- 支持事物注解 -->
+	<tx:annotation-driven transaction-manager="txManager" />
+    <!--配置jbpm	-->
+    <bean id="springHelper" class="org.jbpm.pvm.internal.processengine.SpringHelper">
+    	<property name="jbpmCfg" value="jbpm.cfg.xml"/>
+    </bean>
+	<!-- 活动processEngine对象 -->
+	<bean id="processEngine" factory-bean="springHelper" factory-method="createProcessEngine"></bean>
+</beans>

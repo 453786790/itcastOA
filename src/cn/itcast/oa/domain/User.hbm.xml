@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC 
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+  <class name="cn.itcast.oa.domain.User" table="itcast_user">
+    <id name="id">
+        <generator class="native"></generator>
+    </id>
+    <property name="loginName" length="64"></property>
+    <property name="name" length="16"></property>
+    <property name="gender" length="2"></property>
+    <property name="phone" length="11"></property>
+    <property name="email" length="32"></property>
+    <property name="description" length="128"></property>
+    <property name="password" length="32"></property>
+    <!-- 用户多对一部门 关系  -->
+    <many-to-one name="department" class="cn.itcast.oa.domain.Department" column="departmentid"></many-to-one>
+    <!-- 用户多对多角色  关系  -->
+    <set name="roles" table="itcast_user_role" lazy="false">
+       <key column="userid"></key>
+       <many-to-many class="cn.itcast.oa.domain.Role" column="roleid"></many-to-many>
+    </set>
+  </class>
+</hibernate-mapping>
+

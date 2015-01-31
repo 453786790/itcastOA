@@ -1,0 +1,15 @@
+--搭建启动时异常
+  java.lang.NoSuchMethodError: org.springframework.core.env.ConfigurableEnvironment.merge(Lorg/springframework/core/env/ConfigurableEnvironment;)V 
+			参见： 
+			http://stackoverflow.com/questions/11951825/spring-web-flow-configuration-with-jsf-getting-exception 
+			大意是： 
+			merge方法是Spring Framework 3.1.2引入的。 
+			spring-context 3.1.2 jar 和 spring-core 3.1.0 or 3.1.1 jar 直接有冲突。版本冲突。
+			
+我用startuml画了类图，想把它生成代码。可是当我点tool—java—generate code时显示为
+
+Java profile has not been included.Generate code after including the profile 
+to the project(check the"Generate codes even when there is no profile" option 
+to generate codes without the profile).
+解决办法
+ 用Ctrl+F8，打开profile设置，就可以看到你的java profile在左侧，添加到右侧即可

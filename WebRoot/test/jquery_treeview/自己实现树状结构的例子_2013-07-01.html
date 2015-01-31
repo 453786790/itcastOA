@@ -1,0 +1,32 @@
+<html>
+	<body>
+		
+		<!-- 1，导入资源 -->
+		<script type="text/javascript" src="lib/jquery.js"></script>
+		<script type="text/javascript" src="jquery.treeview.js"></script>
+		<link rel="stylesheet" type="text/css" href="jquery.treeview.css">
+
+		<!-- 2，使用<ul>显示数据 -->
+		<ul id="tree">
+			<li>系统管理
+				<ul>
+					<li>岗位管理</li>
+					<li>部门管理</li>
+					<li>用户管理</div>
+						<ul>
+							<li>添加</li>
+							<li>删除</li>
+						</ul>
+					</li>
+				</ul>
+			</li>
+			<li>网上交流</li>
+		</ul>
+
+		<!-- 3，展示为树状结构 -->
+		<script type="text/javascript">
+			$("#tree").treeview();
+		</script>
+
+	</body>
+</html>

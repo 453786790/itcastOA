@@ -1,0 +1,34 @@
+ svn查看版本历史时Item is not readable svn:条目不可读的问题
+
+    问题：svn 查看资源历史记录失败 ，并提示”Item is not readable”
+    解决： 
+    配置目录权限时如:
+
+    [/]
+
+    tangtx=rw
+
+    yangcx=rw
+
+    weishq=rw
+
+    结果组用户分别在根目录下可以正常show log,而在其子目录中
+    show log都会提示 Item is not readable.
+
+    最后在svnserve.conf 文件中,设置anon-access = none就可以了.
+
+
+
+Myeclipse下灭有自带管理用户名和密码，就只能删除Subversion的auth目录
+
+windows平台
+Win7：
+1、进入c:/Users/[你的用户名]/AppData/Roaming/Subversion/auth目录，删除该目录下的所有文件；
+
+2、重启eclipse/myeclipse，提交svn的文件就会提示输入用户名和密码了。
+XP：
+
+1.C:\Documents and Settings\WangTao\Application Data\Subversion\auth，删除下面所有文件夹， 
+
+2. 在eclipse中刷新 svn repo
+

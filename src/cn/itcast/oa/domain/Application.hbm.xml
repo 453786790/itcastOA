@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC 
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+	<class name="cn.itcast.oa.domain.Application" table="itcast_application">
+		<id name="id">
+			<generator class="native"></generator>
+		</id>
+		<property name="title" length="128"></property>
+		<property name="applyTime"></property>
+		<property name="filePath"></property>
+		<property name="status"></property>
+		<!-- 申请 与申请 人 多对一的关系  -->
+		<many-to-one name="applicate" class="cn.itcast.oa.domain.User" column="userId"></many-to-one>
+		<!-- 申请 与模版 多对一的关系  -->
+		<many-to-one name="template" class="cn.itcast.oa.domain.Template" column="templateId"></many-to-one>
+		<!-- 申请 与申批一对多的关系  -->
+		<set name="approveInfos">
+		   <key column="applicationId"></key>
+		   <one-to-many class="cn.itcast.oa.domain.ApproveInfo"/>
+		</set>
+	</class>
+</hibernate-mapping>
+
